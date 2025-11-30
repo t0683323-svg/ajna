@@ -1,0 +1,46 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "docker-build",
+			"label": "docker-build",
+			"platform": "node",
+			"dockerBuild": {
+				"dockerfile": "${workspaceFolder}/.vscode-server/bin/1e3c50d64110be466c0b4a45222e81d2c9352888/Dockerfile",
+				"context": "${workspaceFolder}/.vscode-server/bin/1e3c50d64110be466c0b4a45222e81d2c9352888",
+				"pull": true
+			},
+			"node": {
+				"package": "${workspaceFolder}/.vscode-server/bin/1e3c50d64110be466c0b4a45222e81d2c9352888/package.json"
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run: release",
+			"dependsOn": [
+				"docker-build"
+			],
+			"platform": "node",
+			"node": {
+				"package": "${workspaceFolder}/.vscode-server/bin/1e3c50d64110be466c0b4a45222e81d2c9352888/package.json"
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run: debug",
+			"dependsOn": [
+				"docker-build"
+			],
+			"dockerRun": {
+				"env": {
+					"DEBUG": "*",
+					"NODE_ENV": "development"
+				}
+			},
+			"node": {
+				"package": "${workspaceFolder}/.vscode-server/bin/1e3c50d64110be466c0b4a45222e81d2c9352888/package.json",
+				"enableDebugging": true
+			}
+		}
+	]
+}
