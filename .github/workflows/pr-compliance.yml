@@ -1,0 +1,32 @@
+name: AJNA CI/CD Check
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Linter (Placeholder)
+      run: npm run lint
+
+    - name: Run Tests (Placeholder)
+      run: npm run test
+
+    # SEKCJĘ PONIŻEJ ODBLOKUJEMY JAK DODAMY SEKRETY
+    # - name: Claude Compliance Check
+    #   run: echo "Tu bedzie webhook do Claude"
