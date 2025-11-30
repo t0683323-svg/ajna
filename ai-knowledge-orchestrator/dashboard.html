@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Knowledge Orchestrator - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-gold: #f0c14b;
+            --accent-silver: #8b949e;
+            --accent-green: #3fb950;
+            --accent-blue: #58a6ff;
+            --accent-purple: #bc8cff;
+            --accent-red: #f85149;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 .icon {
+            font-size: 2rem;
+        }
+
+        .header-meta {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-card .label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .metric-card.gold .value { color: var(--accent-gold); }
+        .metric-card.silver .value { color: var(--accent-silver); }
+        .metric-card.green .value { color: var(--accent-green); }
+        .metric-card.blue .value { color: var(--accent-blue); }
+        .metric-card.purple .value { color: var(--accent-purple); }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        /* Pipeline Status */
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .pipeline-step .step-name {
+            width: 120px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .pipeline-step .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .pipeline-step .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .pipeline-step .step-value {
+            width: 50px;
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+
+        /* Tag Cloud */
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            background: var(--accent-blue);
+            color: var(--text-primary);
+            border-color: var(--accent-blue);
+        }
+
+        .tag .count {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 6px;
+            font-size: 0.75rem;
+        }
+
+        /* Insights Table */
+        .insights-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .insights-table th {
+            text-align: left;
+            padding: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .insights-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .insights-table tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .insights-table .title-cell {
+            max-width: 300px;
+        }
+
+        .insights-table .title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .insights-table .reasoning {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .score-badge.gold {
+            background: rgba(240, 193, 75, 0.2);
+            color: var(--accent-gold);
+        }
+
+        .source-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .source-badge.chatgpt { border-left: 3px solid var(--accent-green); }
+        .source-badge.claude { border-left: 3px solid var(--accent-purple); }
+        .source-badge.gemini { border-left: 3px solid var(--accent-blue); }
+
+        .tag-mini {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Sources Summary */
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .source-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .source-item .name {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .source-item .count {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .source-item.chatgpt .count { color: var(--accent-green); }
+        .source-item.claude .count { color: var(--accent-purple); }
+        .source-item.gemini .count { color: var(--accent-blue); }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--accent-red);
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--accent-red);
+        }
+
+        .error h3 {
+            margin-bottom: 8px;
+        }
+
+        .error p {
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="icon">🔮</span>
+                AI Knowledge Orchestrator
+            </h1>
+            <div class="header-meta">
+                <div id="generated-at">Loading...</div>
+                <div>Dashboard v1.0</div>
+            </div>
+        </header>
+
+        <div id="app">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading dashboard data...</p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            AI Knowledge Orchestrator • Mining insights from AI conversations
+        </footer>
+    </div>
+
+    <script>
+        // Dashboard Application
+        class Dashboard {
+            constructor() {
+                this.data = null;
+                this.chart = null;
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.loadData();
+                    this.render();
+                } catch (error) {
+                    this.renderError(error);
+                }
+            }
+
+            async loadData() {
+                // Try to load from knowledge-base/data.json first, then ./data.json
+                const paths = ['knowledge-base/data.json', './data.json', 'data.json'];
+                
+                for (const path of paths) {
+                    try {
+                        const response = await fetch(path);
+                        if (response.ok) {
+                            this.data = await response.json();
+                            return;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                throw new Error('Could not load data.json. Make sure to run the mining pipeline first.');
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                const generatedAt = document.getElementById('generated-at');
+                
+                if (this.data.generated_at) {
+                    const date = new Date(this.data.generated_at);
+                    generatedAt.textContent = `Updated: ${date.toLocaleString()}`;
+                }
+
+                app.innerHTML = this.renderMetrics() + 
+                               this.renderTwoColumn() + 
+                               this.renderInsightsTable();
+
+                // Initialize chart after DOM is ready
+                setTimeout(() => this.initChart(), 100);
+            }
+
+            renderMetrics() {
+                const m = this.data.metrics;
+                return `
+                    <div class="metrics-grid">
+                        <div class="metric-card blue">
+                            <div class="label">📊 Total Conversations</div>
+                            <div class="value">${m.total_conversations.toLocaleString()}</div>
+                        </div>
+                        <div class="metric-card gold">
+                            <div class="label">💎 Gold Insights</div>
+                            <div class="value">${m.gold_count.toLocaleString()}</div>
+                        </div>
+                        <div class="metric-card purple">
+                            <div class="label">🔄 Dedup Rate</div>
+                            <div class="value">${m.dedup_rate}%</div>
+                        </div>
+                        <div class="metric-card green">
+                            <div class="label">📈 Signal-to-Noise</div>
+                            <div class="value">${m.signal_to_noise}%</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderTwoColumn() {
+                return `
+                    <div class="two-column">
+                        <div class="card">
+                            <h3 class="card-title">⚡ Pipeline Status</h3>
+                            ${this.renderPipelineStatus()}
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">📊 Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two-column">
+                        <div class="card">
+                            <h3 class="card-title">🏷️ Top Tags</h3>
+                            ${this.renderTagCloud()}
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">📁 Sources</h3>
+                            ${this.renderSources()}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderPipelineStatus() {
+                const steps = [
+                    { name: 'Loading', key: 'loading' },
+                    { name: 'Chunking', key: 'chunking' },
+                    { name: 'Judging', key: 'judging' },
+                    { name: 'Deduplication', key: 'deduplication' },
+                    { name: 'Output', key: 'output' }
+                ];
+
+                return steps.map(step => {
+                    const value = this.data.pipeline_status[step.key] || 0;
+                    return `
+                        <div class="pipeline-step">
+                            <span class="step-name">${step.name}</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${value}%"></div>
+                            </div>
+                            <span class="step-value">${value}%</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderTagCloud() {
+                const tags = Object.entries(this.data.tag_cloud || {})
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 20);
+
+                if (tags.length === 0) {
+                    return '<p style="color: var(--text-secondary)">No tags found</p>';
+                }
+
+                return `
+                    <div class="tag-cloud">
+                        ${tags.map(([tag, count]) => `
+                            <span class="tag">${tag}<span class="count">${count}</span></span>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            renderSources() {
+                const sources = this.data.sources || {};
+                return `
+                    <div class="sources-grid">
+                        <div class="source-item chatgpt">
+                            <div class="name">ChatGPT</div>
+                            <div class="count">${sources.ChatGPT || 0}</div>
+                        </div>
+                        <div class="source-item claude">
+                            <div class="name">Claude</div>
+                            <div class="count">${sources.Claude || 0}</div>
+                        </div>
+                        <div class="source-item gemini">
+                            <div class="name">Gemini</div>
+                            <div class="count">${sources.Gemini || 0}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderInsightsTable() {
+                const insights = this.data.top_insights || [];
+                
+                if (insights.length === 0) {
+                    return `
+                        <div class="card">
+                            <h3 class="card-title">🏆 Top Insights</h3>
+                            <p style="color: var(--text-secondary)">No gold insights found yet</p>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="card">
+                        <h3 class="card-title">🏆 Top 10 Gold Insights</h3>
+                        <table class="insights-table">
+                            <thead>
+                                <tr>
+                                    <th>Score</th>
+                                    <th>Title & Summary</th>
+                                    <th>Source</th>
+                                    <th>Tags</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${insights.map(insight => `
+                                    <tr>
+                                        <td>
+                                            <span class="score-badge gold">${insight.score}</span>
+                                        </td>
+                                        <td class="title-cell">
+                                            <div class="title">${this.escapeHtml(insight.title)}</div>
+                                            <div class="reasoning">${this.escapeHtml(insight.reasoning)}</div>
+                                        </td>
+                                        <td>
+                                            <span class="source-badge ${insight.source.toLowerCase()}">${insight.source}</span>
+                                        </td>
+                                        <td>
+                                            ${(insight.tags || []).map(tag => `<span class="tag-mini">${tag}</span>`).join('')}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            initChart() {
+                const ctx = document.getElementById('distributionChart');
+                if (!ctx) return;
+
+                const dist = this.data.distribution;
+                
+                this.chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Gold (≥8)', 'Silver (5-7)', 'Trash (<5)'],
+                        datasets: [{
+                            data: [dist.gold, dist.silver, dist.trash],
+                            backgroundColor: [
+                                'rgba(240, 193, 75, 0.8)',
+                                'rgba(139, 148, 158, 0.8)',
+                                'rgba(248, 81, 73, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(240, 193, 75, 1)',
+                                'rgba(139, 148, 158, 1)',
+                                'rgba(248, 81, 73, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#8b949e',
+                                    padding: 16,
+                                    font: { size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderError(error) {
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <div class="error">
+                        <h3>⚠️ Could not load dashboard data</h3>
+                        <p>${error.message}</p>
+                        <p style="margin-top: 16px; font-size: 0.85rem;">
+                            Run the mining pipeline first:<br>
+                            <code style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px;">
+                                python mine_knowledge.py --input exports/ --output knowledge-base/
+                            </code>
+                        </p>
+                        <p style="margin-top: 12px; font-size: 0.85rem;">
+                            Or serve this page via HTTP server:<br>
+                            <code style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px;">
+                                python -m http.server 8080
+                            </code>
+                        </p>
+                    </div>
+                `;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Initialize dashboard
+        new Dashboard();
+    </script>
+</body>
+</html>
