@@ -1,0 +1,43 @@
+mysql_data/
+qdrant_data/
+ollama_data/
+ghost_content/
+node_modules/
+.aws
+.cache/
+.vscode-server/
+
+.snap/
+.local/
+.config/
+
+.azure
+.amp/
+.bash*
+.profile
+.vscode/
+OneDrive/
+snap/
+
+# Claude debug logs & symlinks
+.claude/
+
+# Amperstand cache
+.amp/
+
+# Microsoft OneDrive sync
+OneDrive/
+
+# Bash profiles (lokalne)
+.bash_history
+.bash_profile
+.bashrc
+
+# Google Cloud SDK
+google-cloud-sdk/
+
+# Tymczasowe IDE
+.idea/
+.vscode/local*
+*.swp
+*.swo
