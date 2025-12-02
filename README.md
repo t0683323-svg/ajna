@@ -103,6 +103,9 @@ npm install
 # Build
 npm run build
 
+# Type check (including tests)
+npm run typecheck
+
 # Run tests
 npm test
 
