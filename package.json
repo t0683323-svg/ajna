@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@continuedev/cli": "^1.5.17"
+  },
+  "scripts": {
+    "lint": "echo 'Linting skipped for now' && exit 0",
+    "test": "echo 'No tests specified yet' && exit 0"
+  }
+}

@@ -1,43 +1,153 @@
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Directories
+node_modules/
+.cache/
+.vscode-server/
+.vscode/
+.idea/
+.aws/
+.azure/
+.amp/
+.local/
+.config/
+.snap/
+snap/
+
+# Virtual Environments
+**/venv/
+**/.venv/
+**/env/
+**/.env/
+**/ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Application specific
+n8n_data/
+.windsurf-server/
+11/
+
+# Archives
+*.zip
+
+# Untitled files
+Untitled*
+
+# Data directories
 mysql_data/
 qdrant_data/
 ollama_data/
 ghost_content/
-node_modules/
-.aws
-.cache/
-.vscode-server/
+google-cloud-sdk/
 
-.snap/
-.local/
-.config/
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
 
-.azure
-.amp/
-.bash*
-.profile
-.vscode/
-OneDrive/
-snap/
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
 
-# Claude debug logs & symlinks
+# Editor directories and files
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# System specific
+.DS_Store
+Thumbs.db
+
+# Project specific
 .claude/
-
-# Amperstand cache
 .amp/
 
-# Microsoft OneDrive sync
-OneDrive/
-
-# Bash profiles (lokalne)
+# User specific
 .bash_history
 .bash_profile
 .bashrc
+.profile
 
-# Google Cloud SDK
-google-cloud-sdk/
+# OneDrive
+OneDrive/
 
-# Tymczasowe IDE
-.idea/
-.vscode/local*
-*.swp
-*.swo
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
